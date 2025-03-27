@@ -7,55 +7,454 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para a página Sobre Nós */
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            background-color: var(--primary-color);
+            color: var(--white);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+        
+        .about-hero {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 30%, rgba(0,166,125,0.2) 100%);
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .about-hero h1 {
+            margin-bottom: 20px;
+        }
+        
+        .about-section {
+            padding: 50px 0;
+        }
+        
+        .about-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .team-member {
+            background-color: var(--light-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+        
+        .member-photo {
+            height: auto;
+            overflow: hidden;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .member-photo img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .team-member:hover .member-photo img {
+            transform: scale(1.05);
+        }
+        
+        .member-info {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .member-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+        
+        .member-info p.role {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .mission-values {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .mission-box, .values-box {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .values-list {
+            margin-top: 20px;
+        }
+        
+        .values-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .values-list li i {
+            color: var(--primary-color);
+            margin-top: 5px;
+        }
+        
+        .history-timeline {
+            margin-top: 50px;
+            position: relative;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px;
+            width: 4px;
+            background-color: var(--primary-color);
+        }
+        
+        .timeline-item {
+            margin-left: 50px;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            left: -38px;
+            top: 5px;
+        }
+        
+        .timeline-date {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 60px 0;
+            text-align: center;
+            color: var(--white);
+        }
+        
+        .cta-section h2 {
+            color: var(--white);
+        }
+        
+        .cta-section .btn-primary {
+            background-color: var(--white);
+            color: var(--primary-color);
+            margin-top: 20px;
+        }
+        
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 40px 0;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        /* Ajustes para mobile */
+        @media (max-width: 768px) {
+            .about-hero {
+                padding: 40px 0;
+            }
+            
+            .about-section {
+                padding: 40px 0;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .timeline-item {
+                margin-left: 40px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .member-info h3 {
+                font-size: 1.2rem;
+            }
+            
+            .mission-box, .values-box {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
+    <a href="index.html" class="back-button" aria-label="Voltar para a página inicial">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    
+    <section class="about-hero">
         <div class="container">
-            <nav>
-                <div class="logo">
-                    <h1 class="logo-text">EcoEsponja Mágica</h1>
-                </div>
-            </nav>
+            <h1>Sobre a EcoEsponja Mágica</h1>
+            <p>Conheça nossa história, missão e os valores que guiam nossa empresa</p>
         </div>
-    </header>
-
-    <section class="about-us">
+    </section>
+    
+    <section class="about-section">
         <div class="container">
-            <div class="section-header">
-                <h2>Sobre Nós</h2>
+            <h2>Nossa História</h2>
+            <p>A EcoEsponja Mágica surgiu em 2020, quando um grupo de amigos apaixonados por sustentabilidade e inovação resolveu enfrentar um problema cotidiano: o desperdício causado por esponjas tradicionais e produtos de limpeza descartáveis.</p>
+            <p>Após dois anos de pesquisa e desenvolvimento, em parceria com especialistas em materiais sustentáveis, nasceu nossa revolucionária EcoEsponja Mágica - um produto que rapidamente se tornou referência em limpeza sustentável no Brasil.</p>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">50.000+</div>
+                    <p>Clientes Satisfeitos</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500.000+</div>
+                    <p>Esponjas Tradicionais Evitadas</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1.000+</div>
+                    <p>Litros de Água Economizados</p>
+                </div>
             </div>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>A EcoEsponja Mágica nasceu da necessidade de revolucionar a forma como as pessoas realizam suas tarefas de limpeza diária, sempre com um olhar especial para a sustentabilidade e o meio ambiente.</p>
-                    
-                    <h3>Nossa História</h3>
-                    <p>Fundada em 2023, nossa empresa surgiu após anos de pesquisa e desenvolvimento para criar uma solução que unisse eficiência na limpeza com responsabilidade ambiental. Identificamos que as esponjas tradicionais, além de pouco duráveis, contribuem significativamente para o acúmulo de resíduos em nossos oceanos e aterros.</p>
-                    
-                    <h3>Nossa Missão</h3>
-                    <p>Transformar a experiência de limpeza doméstica através de produtos inovadores e sustentáveis, contribuindo para um futuro mais limpo e consciente.</p>
-                    
-                    <h3>Nossos Valores</h3>
-                    <ul>
-                        <li>Sustentabilidade em primeiro lugar</li>
-                        <li>Inovação constante</li>
-                        <li>Qualidade superior</li>
-                        <li>Satisfação do cliente</li>
-                        <li>Responsabilidade ambiental</li>
-                    </ul>
-                    
-                    <h3>Compromisso com o Meio Ambiente</h3>
-                    <p>Cada EcoEsponja Mágica é produzida com materiais de alta qualidade e tecnologia sustentável, reduzindo significativamente o impacto ambiental em comparação com produtos convencionais. Nosso compromisso vai além do produto: investimos em programas de reciclagem e apoiamos iniciativas de preservação ambiental.</p>
+            
+            <div class="history-timeline">
+                <div class="timeline-line"></div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2020</div>
+                    <h3>O início da ideia</h3>
+                    <p>Nascimento do conceito da EcoEsponja Mágica a partir da observação do desperdício de esponjas tradicionais.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2021</div>
+                    <h3>Pesquisa e desenvolvimento</h3>
+                    <p>Parceria com laboratórios especializados em materiais sustentáveis para criar uma solução inovadora.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2022</div>
+                    <h3>Lançamento do produto</h3>
+                    <p>Após testes rigorosos, a EcoEsponja Mágica é finalmente lançada no mercado brasileiro.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2023</div>
+                    <h3>Expansão nacional</h3>
+                    <p>Crescimento rápido e ampliação da distribuição para todo o território nacional.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2024</div>
+                    <h3>Reconhecimento e premiações</h3>
+                    <p>Recebemos reconhecimentos por nossa inovação e contribuição para a sustentabilidade.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2025</div>
+                    <h3>Novas fronteiras</h3>
+                    <p>Início do desenvolvimento de novos produtos sustentáveis para complementar nossa linha.</p>
                 </div>
             </div>
         </div>
     </section>
-
+    
+    <section class="about-section" style="background-color: var(--light-bg);">
+        <div class="container">
+            <div class="mission-values">
+                <div class="mission-box">
+                    <h2>Nossa Missão</h2>
+                    <p>Transformar o mercado de produtos de limpeza com soluções sustentáveis, eficientes e acessíveis, reduzindo o impacto ambiental das atividades domésticas diárias.</p>
+                    <p>Buscamos conscientizar os consumidores sobre a importância de escolhas mais sustentáveis no dia a dia, provando que é possível aliar eficiência, economia e responsabilidade ambiental.</p>
+                </div>
+                <div class="values-box">
+                    <h2>Nossos Valores</h2>
+                    <ul class="values-list">
+                        <li>
+                            <i class="fas fa-leaf"></i>
+                            <div>
+                                <h3>Sustentabilidade</h3>
+                                <p>Compromisso constante com práticas eco-friendly em toda a cadeia produtiva.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-flask"></i>
+                            <div>
+                                <h3>Inovação</h3>
+                                <p>Busca contínua por novas tecnologias e materiais que reduzam o impacto ambiental.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-medal"></i>
+                            <div>
+                                <h3>Qualidade</h3>
+                                <p>Produtos de excelência que realmente cumprem o que prometem.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-heart"></i>
+                            <div>
+                                <h3>Empatia</h3>
+                                <p>Desenvolvimento centrado nas reais necessidades das famílias brasileiras.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="about-section">
+        <div class="container">
+            <h2>Nossa Equipe</h2>
+            <p>Conheça as pessoas apaixonadas que trabalham todos os dias para tornar o mundo mais limpo e sustentável.</p>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="img/team/marcela.png" alt="Marcela Santos">
+                    </div>
+                    <div class="member-info">
+                        <p class="role">Fundadora e CEO</p>
+                        <p>Visionária apaixonada por sustentabilidade e inovação, lidera nossa missão com determinação.</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="img/team/ricardo.png" alt="Ricardo Oliveira">
+                    </div>
+                    <div class="member-info">
+                        <p class="role">Diretor de Inovação</p>
+                        <p>Especialista em biomateriais, responsável pelo desenvolvimento de nossos produtos revolucionários.</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="img/team/camila.png" alt="Camila Ferreira">
+                    </div>
+                    <div class="member-info">
+                        <p class="role">Diretora de Sustentabilidade</p>
+                        <p>Garante que nossos processos e produtos sigam os mais rígidos padrões ambientais.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta-section">
+        <div class="container">
+            <h2>Faça Parte da Revolução Sustentável</h2>
+            <p>Junte-se a nós nessa jornada por um futuro mais limpo e consciente</p>
+            <a href="index.html#comprar" class="btn-primary btn-large">Conheça Nossos Produtos</a>
+        </div>
+    </section>
+    
     <footer>
         <div class="container">
+            <div class="footer-top">
+                <div class="footer-column">
+                    <h4>EcoEsponja Mágica</h4>
+                    <p>Limpeza Eficiente, Consciência Sustentável</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Contato</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contato@ecoesponja.com.br</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Av. Paulista, 1578 - Bela Vista, São Paulo, SP</li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Informações</h4>
+                    <ul>
+                        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+                        <li><a href="politica-de-trocas.html">Política de Trocas</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Formas de Pagamento</h4>
+                    <div class="payment-icons">
+                        <i class="fab fa-cc-visa"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fab fa-cc-amex"></i>
+                        <i class="fab fa-pix"></i>
+                        <i class="fas fa-barcode"></i>
+                    </div>
+                </div>
+            </div>
             <div class="footer-bottom">
                 <p>&copy; 2025 EcoEsponja Mágica. Todos os direitos reservados.</p>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Ativar os itens de FAQ quando clicados
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                question.addEventListener('click', () => {
+                    item.classList.toggle('active');
+                });
+            });
+        });
+    </script>
 </body>
 </html> 

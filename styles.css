@@ -965,4 +965,231 @@ footer {
         flex-direction: column;
         gap: 30px;
     }
+}
+
+/* Seção de Perigo Invisível */
+.danger-section {
+    background-color: #fff8f8;
+    padding: 40px;
+    border-radius: 12px;
+    margin: 50px 0;
+    box-shadow: var(--box-shadow);
+    border-left: 5px solid #e74c3c;
+}
+
+.danger-section h2 {
+    color: #e74c3c;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.danger-section h2 i {
+    font-size: 2rem;
+}
+
+.danger-intro {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.bacteria-info {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.bacteria-image {
+    flex: 1;
+    min-width: 280px;
+}
+
+.bacteria-image img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+}
+
+.bacteria-text {
+    flex: 1.5;
+    min-width: 300px;
+}
+
+.danger-list {
+    margin: 20px 0;
+}
+
+.danger-list li {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.danger-list li i {
+    color: #e74c3c;
+    margin-top: 5px;
+}
+
+.study-quote {
+    background-color: rgba(231, 76, 60, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 25px 0;
+    position: relative;
+}
+
+.study-quote i {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    font-size: 1.5rem;
+    color: #e74c3c;
+}
+
+.study-quote p {
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.quote-source {
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.solution-highlight {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.solution-highlight i {
+    font-size: 1.5rem;
+}
+
+/* Seção de Economia */
+.economy-section {
+    background-color: #f9f9f9;
+    padding: 80px 0;
+}
+
+.economy-section .section-header h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.economy-section .section-header h2 i {
+    color: #f1c40f;
+}
+
+.economy-table-container {
+    max-width: 800px;
+    margin: 40px auto;
+    overflow-x: auto;
+}
+
+.economy-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: var(--box-shadow);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.economy-table th, 
+.economy-table td {
+    padding: 15px 20px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.economy-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.economy-table .common-sponge {
+    background-color: #fff8f8;
+}
+
+.economy-table .eco-sponge {
+    background-color: #e6f7f1;
+    font-weight: 600;
+}
+
+.economy-table .eco-sponge td:last-child {
+    color: var(--primary-color);
+}
+
+.economy-highlight {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 0 auto 40px;
+    box-shadow: var(--box-shadow);
+}
+
+.economy-icon {
+    background-color: #f1c40f;
+    color: white;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+}
+
+.economy-text {
+    flex: 1;
+}
+
+.economy-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.economy-conclusion {
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.cta-after-economy {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Responsividade para novas seções */
+@media (max-width: 768px) {
+    .danger-section {
+        padding: 30px 20px;
+    }
+    
+    .bacteria-info {
+        flex-direction: column;
+    }
+    
+    .economy-highlight {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
 } 
