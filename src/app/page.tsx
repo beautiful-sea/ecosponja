@@ -16,6 +16,17 @@ const LazyFAQSection = dynamic(() => import('../components/LazyFAQSection'), {
   ssr: false,
 });
 
+// Carregamento com baixa prioridade para seções abaixo da dobra
+const LazyBenefitsSection = dynamic(() => import('@/components/sections/BenefitsSection'), { 
+  ssr: false,
+  loading: () => null
+});
+
+const LazyEconomySection = dynamic(() => import('@/components/sections/EconomySection'), { 
+  ssr: false,
+  loading: () => null
+});
+
 // Importação dinâmica do contador para reduzir o bundle inicial
 const CountdownTimer = dynamic(() => import('../components/CountdownTimer'), {
   loading: () => null,
@@ -43,8 +54,8 @@ const RecentPurchaseNotifications = memo(() => {
       { nome: "Carlos Santos", local: "Recife, PE" }
     ];
     
-    let notificationTimeout;
-    let hideTimeout;
+    let notificationTimeout: NodeJS.Timeout | undefined;
+    let hideTimeout: NodeJS.Timeout | undefined;
     
     const showNotification = () => {
       const comprador = compradores[Math.floor(Math.random() * compradores.length)];
@@ -414,6 +425,7 @@ export default function Home() {
                 height={400}
                 priority={true}
                 className="w-full object-contain"
+                fetchPriority="high"
               />
               
               <div className="absolute top-4 right-4 bg-red-600 text-white font-bold text-xl py-3 px-4 rounded-full transform rotate-12 shadow-md">
@@ -611,7 +623,6 @@ export default function Home() {
                 poster="/img/background.webp"
                 muted
                 preload="none"
-                loading="lazy"
                 playsInline
               >
                 <source src="/videos/ads.webm" type="video/webm" />
@@ -649,273 +660,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Economize de Verdade - Seção Otimizada */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <span className="inline-block bg-yellow-100 text-yellow-700 font-bold px-4 py-1 rounded-full mb-3">
-              ECONOMIA COMPROVADA
-            </span>
-            <h2 className="text-3xl font-bold text-gray-800 mb-4 flex items-center justify-center">
-              <Icon name="fas fa-coins" className="text-yellow-500 mr-3 text-4xl" /> Economize Mais de R$100 Por Ano
-            </h2>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-              O investimento inteligente que protege seu bolso e sua família ao mesmo tempo. Veja a comparação:
-            </p>
-          </div>
-          
-          {/* Tabela econômica responsiva */}
-          <div className="max-w-3xl mx-auto overflow-x-auto bg-white rounded-lg shadow-lg mb-12">
-            <table className="w-full min-w-full">
-              <thead className="bg-green-600 text-white">
-                <tr>
-                  <th className="py-4 px-3 md:px-6 text-left font-bold text-sm md:text-lg">Tipo de Esponja</th>
-                  <th className="py-4 px-2 md:px-6 text-center font-bold text-sm md:text-lg">Duração</th>
-                  <th className="py-4 px-3 md:px-6 text-right font-bold text-sm md:text-lg">Gasto Anual</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b bg-red-50">
-                  <td className="py-4 md:py-5 px-3 md:px-6 text-left">
-                    <div className="flex items-center">
-                      <Icon name="fas fa-times-circle" className="text-red-500 mr-2" />
-                      <span className="text-sm md:text-base">Esponja comum</span>
-                    </div>
-                  </td>
-                  <td className="py-4 md:py-5 px-2 md:px-6 text-center text-sm md:text-base">1 semana</td>
-                  <td className="py-4 md:py-5 px-3 md:px-6 text-right font-semibold text-red-600 text-lg md:text-xl">R$ 144,00</td>
-                </tr>
-                <tr className="bg-green-50">
-                  <td className="py-4 md:py-5 px-3 md:px-6 text-left font-semibold text-green-700">
-                    <div className="flex items-center">
-                      <Icon name="fas fa-check-circle" className="text-green-500 mr-2" />
-                      <span className="text-sm md:text-base">EcoEsponja Mágica</span>
-                    </div>
-                  </td>
-                  <td className="py-4 md:py-5 px-2 md:px-6 text-center text-sm md:text-base">12 meses</td>
-                  <td className="py-4 md:py-5 px-3 md:px-6 text-right font-bold text-green-700 text-lg md:text-2xl">R$ 39,90</td>
-                </tr>
-              </tbody>
-              <tfoot className="bg-gray-100">
-                <tr>
-                  <td colSpan={2} className="py-3 md:py-4 px-3 md:px-6 text-right font-bold text-sm md:text-base">Sua economia anual:</td>
-                  <td className="py-3 md:py-4 px-3 md:px-6 text-right font-bold text-green-600 text-lg md:text-xl">R$ 104,10</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-
-          {/* Versão alternativa para dispositivos muito pequenos */}
-          <div className="md:hidden max-w-xs mx-auto mb-8">
-            <div className="mb-4 bg-white rounded-lg shadow-md p-4">
-              <h4 className="font-bold text-lg text-center mb-2">Economia Comparativa</h4>
-              <p className="text-center text-gray-700 mb-2">Veja quanto você economiza ao ano:</p>
-              <div className="flex justify-between items-center pt-2 border-t">
-                <span className="font-medium">Esponjas comuns:</span>
-                <span className="text-red-600 font-bold">R$ 144,00</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t">
-                <span className="font-medium">EcoEsponja Mágica:</span>
-                <span className="text-green-700 font-bold">R$ 39,90</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 mt-2 border-t border-green-500">
-                <span className="font-bold">Sua economia:</span>
-                <span className="text-green-600 font-bold text-xl">R$ 104,10</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
-            <div className="bg-white p-5 rounded-lg shadow-md flex flex-col items-center text-center transform transition-transform hover:scale-105">
-              <div className="text-4xl text-green-500 mb-3">
-                <Icon name="fas fa-wallet" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">Economia para Seu Bolso</h3>
-              <p className="text-gray-700">Reduza seus gastos com produtos de limpeza em mais de R$100 por ano.</p>
-            </div>
-
-            <div className="bg-white p-5 rounded-lg shadow-md flex flex-col items-center text-center transform transition-transform hover:scale-105">
-              <div className="text-4xl text-green-500 mb-3">
-                <Icon name="fas fa-heart" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">Proteção para Sua Família</h3>
-              <p className="text-gray-700">Material antibacteriano que elimina 99,9% dos germes nocivos à saúde.</p>
-            </div>
-
-            <div className="bg-white p-5 rounded-lg shadow-md flex flex-col items-center text-center transform transition-transform hover:scale-105">
-              <div className="text-4xl text-green-500 mb-3">
-                <Icon name="fas fa-globe-americas" />
-              </div>
-              <h3 className="font-bold text-lg mb-2">Menos Lixo no Planeta</h3>
-              <p className="text-gray-700">Reduza seu impacto ambiental eliminando dezenas de esponjas descartáveis.</p>
-            </div>
-          </div>
-          
-          <div className="max-w-3xl mx-auto bg-yellow-50 p-6 rounded-lg shadow-md flex flex-col md:flex-row items-center gap-6 border-l-4 border-yellow-500">
-            <div className="text-5xl text-yellow-500">
-              <i className="fas fa-lightbulb"></i>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-green-700 mb-2">Uma família média gasta R$432 por ano com esponjas!</p>
-              <p className="text-gray-700">Com o kit família da EcoEsponja Mágica (3 unidades), você economiza mais de R$330 anualmente enquanto protege a saúde da sua família.</p>
-              <div className="flex items-center mt-3 text-green-600">
-                <i className="fas fa-check-circle mr-2"></i>
-                <span className="font-medium">Investimento inteligente que se paga em menos de 1 mês</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="text-center mt-10">
-            <a href="#comprar" 
-               className="bg-green-600 hover:bg-green-700 text-white py-4 px-10 rounded-lg font-bold transition-colors inline-block text-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-              QUERO ECONOMIZAR R$100+ POR ANO
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* Benefícios da EcoEsponja - Seção Otimizada */}
-      <section className="py-16 bg-white" id="beneficios">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <span className="inline-block bg-green-100 text-green-600 font-bold px-4 py-1 rounded-full mb-3">
-              BENEFÍCIOS EXCLUSIVOS
-            </span>
-            <h2 className="text-3xl font-bold mb-4 text-gray-800 flex items-center justify-center">
-              <i className="fas fa-star text-yellow-400 mr-3 text-4xl"></i> 6 Motivos Para Escolher a EcoEsponja Agora
-            </h2>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-              Descubra por que mais de 50.000 famílias brasileiras já substituíram suas esponjas comuns pela revolucionária EcoEsponja Mágica:
-            </p>
-          </div>
+      <LazyBenefitsSection />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Benefício 1 */}
-            <div className="bg-blue-50 rounded-lg shadow-md p-8 border-t-4 border-blue-500 transform transition hover:scale-105">
-              <div className="text-4xl mb-4 text-blue-500">
-                <i className="fas fa-tint"></i>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-blue-700">Super Absorção</h3>
-              <p className="text-gray-700">Absorve até <strong>10x mais líquido</strong> que esponjas comuns, facilitando a limpeza e reduzindo o tempo gasto em tarefas domésticas.</p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Captura derramamentos rapidamente</span>
-                </li>
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Seca superfícies em segundos</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Benefício 2 */}
-            <div className="bg-green-50 rounded-lg shadow-md p-8 border-t-4 border-green-500 transform transition hover:scale-105">
-              <div className="text-4xl mb-4 text-green-500">
-                <i className="fas fa-calendar-alt"></i>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-green-700">Durabilidade Incrível</h3>
-              <p className="text-gray-700">Dura até <strong>12 meses</strong> sem perder a qualidade, substituindo dezenas de esponjas tradicionais e economizando seu dinheiro.</p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Não desfaz mesmo com uso intenso</span>
-                </li>
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Mantém a eficiência por 1 ano</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Benefício 3 */}
-            <div className="bg-purple-50 rounded-lg shadow-md p-8 border-t-4 border-purple-500 transform transition hover:scale-105">
-              <div className="text-4xl mb-4 text-purple-500">
-                <i className="fas fa-shield-alt"></i>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-purple-700">Anti-Bacteriana</h3>
-              <p className="text-gray-700">Material especial que <strong>elimina 99,9% das bactérias</strong>, mantendo sua cozinha mais segura e protegendo a saúde da sua família.</p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Previne contaminação cruzada</span>
-                </li>
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Não desenvolve odores desagradáveis</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Benefício 4 - Os outros 3 benefícios foram omitidos para manter a brevidade do código */}
-            <div className="bg-yellow-50 rounded-lg shadow-md p-8 border-t-4 border-yellow-500 transform transition hover:scale-105">
-              <div className="text-4xl mb-4 text-yellow-500">
-                <i className="fas fa-layer-group"></i>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-yellow-700">Multiuso</h3>
-              <p className="text-gray-700">Funciona em <strong>qualquer superfície</strong> - vidros, cerâmica, aço inox, madeira e muito mais, sem riscar ou danificar.</p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Ideal para panelas antiaderentes</span>
-                </li>
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Perfeita para superfícies delicadas</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Benefício 5 */}
-            <div className="bg-red-50 rounded-lg shadow-md p-8 border-t-4 border-red-500 transform transition hover:scale-105">
-              <div className="text-4xl mb-4 text-red-500">
-                <i className="fas fa-recycle"></i>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-red-700">Ecológica</h3>
-              <p className="text-gray-700">Produzida com materiais <strong>sustentáveis e biodegradáveis</strong>, reduzindo significativamente seu impacto ambiental.</p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Reduz resíduos plásticos</span>
-                </li>
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Decomposição natural após o descarte</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Benefício 6 */}
-            <div className="bg-teal-50 rounded-lg shadow-md p-8 border-t-4 border-teal-500 transform transition hover:scale-105">
-              <div className="text-4xl mb-4 text-teal-500">
-                <i className="fas fa-spray-can"></i>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-teal-700">Limpa Sem Químicos</h3>
-              <p className="text-gray-700">Seu design especial permite <strong>limpeza eficiente</strong> usando apenas água, reduzindo o uso de produtos químicos em sua casa.</p>
-              <ul className="mt-4 space-y-2">
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Ideal para famílias com crianças</span>
-                </li>
-                <li className="flex items-center text-gray-700">
-                  <i className="fas fa-check text-green-500 mr-2"></i>
-                  <span>Perfeita para pessoas com alergias</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <a href="#comprar" 
-               className="bg-green-600 hover:bg-green-700 text-white py-4 px-10 rounded-lg font-bold transition duration-300 inline-block text-xl shadow-lg hover:shadow-xl">
-              QUERO TODOS ESSES BENEFÍCIOS <i className="fas fa-arrow-right ml-2"></i>
-            </a>
-            <p className="text-gray-500 mt-3 text-sm">
-              <i className="fas fa-lock mr-1"></i> Compra 100% segura | Entrega para todo Brasil | Garantia de 7 dias
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Economize de Verdade - Seção Otimizada */}
+      <LazyEconomySection />
 
       {/* Depoimentos - Seção Otimizada para Prova Social */}
       <section className="py-16 bg-gradient-to-b from-white to-blue-50">

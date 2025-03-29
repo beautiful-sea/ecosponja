@@ -134,8 +134,8 @@ export default function Banner({
     if (typeof window !== 'undefined') {
       try {
         // Google Analytics (GA4)
-        if (window.gtag) {
-          window.gtag('event', eventType === 'view' ? 'banner_view' : 'banner_click', {
+        if ((window as any).gtag) {
+          (window as any).gtag('event', eventType === 'view' ? 'banner_view' : 'banner_click', {
             banner_id: bannerId,
             banner_title: title,
             banner_position: bannerPosition,
@@ -145,8 +145,8 @@ export default function Banner({
         }
         
         // Facebook Pixel
-        if (window.fbq) {
-          window.fbq('trackCustom', eventType === 'view' ? 'BannerView' : 'BannerClick', {
+        if ((window as any).fbq) {
+          (window as any).fbq('trackCustom', eventType === 'view' ? 'BannerView' : 'BannerClick', {
             banner_id: bannerId,
             banner_title: title,
             banner_position: bannerPosition

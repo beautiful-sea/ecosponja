@@ -49,13 +49,13 @@ export async function GET(
       
       // Verificar se cliente já existe ou criar novo
       let cliente = null;
-      if (customerData.email) {
+      if (customerData && customerData.email) {
         cliente = await prisma.cliente.findUnique({
           where: { email: customerData.email }
         });
       }
       
-      if (!cliente && customerData.email) {
+      if (!cliente && customerData && customerData.email) {
         cliente = await prisma.cliente.create({
           data: {
             nome: customerData.nome,
@@ -66,7 +66,7 @@ export async function GET(
         // Cliente sem email, cria um temporário
         cliente = await prisma.cliente.create({
           data: {
-            nome: customerData.nome || 'Cliente sem nome',
+            nome: customerData ? customerData.nome || 'Cliente sem nome' : 'Cliente sem nome',
             email: `cliente-yampi-${Date.now()}@temporario.com`
           }
         });
@@ -166,7 +166,7 @@ export async function GET(
       let itensPedido = null;
       if (orderData.items && orderData.items.data && 
           Array.isArray(orderData.items.data) && orderData.items.data.length > 0) {
-        itensPedido = orderData.items.data.map(item => ({
+        itensPedido = orderData.items.data.map((item: any) => ({
           produto_id: item.product_id || null,
           sku_id: item.sku_id || null,
           sku: item.sku || '',
@@ -198,8 +198,8 @@ export async function GET(
             yampi_status_id: typeof orderData.status === 'object' ? orderData.status.id : null,
             shipment_service: orderData.shipment_service || orderData.shipping_service || null,
             forma_pagamento: formaPagamento,
-            endereco_entrega: endereco ? Prisma.JsonValue(endereco) : undefined,
-            itens_pedido: itensPedido ? Prisma.JsonValue(itensPedido) : undefined,
+            endereco_entrega: endereco || undefined,
+            itens_pedido: itensPedido || undefined,
             gateway_pagamento: orderData.gateway || null,
             observacoes: orderData.observation || null
           },
@@ -237,8 +237,8 @@ export async function GET(
             yampi_status_id: typeof orderData.status === 'object' ? orderData.status.id : null,
             shipment_service: orderData.shipment_service || orderData.shipping_service || null,
             forma_pagamento: formaPagamento,
-            endereco_entrega: endereco ? Prisma.JsonValue(endereco) : undefined,
-            itens_pedido: itensPedido ? Prisma.JsonValue(itensPedido) : undefined,
+            endereco_entrega: endereco || undefined,
+            itens_pedido: itensPedido || undefined,
             gateway_pagamento: orderData.gateway || null,
             observacoes: orderData.observation || null
           },

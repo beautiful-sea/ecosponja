@@ -11,40 +11,44 @@ const nextConfig = {
   },
   swcMinify: true,
   experimental: {
-    optimizeCss: true,
-    optimizeServerReact: true,
-    optimizePackageImports: [''],
+    // Desabilitando otimizações experimentais que podem causar problemas
+    // optimizeCss: true,
+    // optimizeServerReact: true,
+    // optimizePackageImports: [''],
   },
   webpack: (config, { dev, isServer }) => {
+    // Lidar com o erro 'self is not defined'
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+    };
+
+    // Ignorar erros de 'window is not defined' e 'document is not defined' no servidor
+    if (isServer) {
+      config.externals = [...(config.externals || []), 'canvas', 'jsdom'];
+    }
+
     // Otimizações apenas para ambiente de produção
     if (!dev) {
-      // Otimização de bundle splitting
+      // Simplificando a configuração de splitChunks para evitar problemas
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
           default: false,
           vendors: false,
-          // Componentes comuns
           commons: {
             name: 'commons',
             chunks: 'all',
             minChunks: 2,
             reuseExistingChunk: true,
           },
-          // Pacotes de terceiros
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              // Pega o nome do pacote sem a versão
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-              return `npm.${packageName.replace('@', '')}`;
-            },
-            chunks: 'all',
-          },
         },
       };
 
-      // Adiciona otimização de minificação e melhora tree-shaking
+      // Comentando configuração avançada de otimização
+      /*
       config.optimization.usedExports = true;
       config.optimization.providedExports = true;
       config.optimization.sideEffects = true;
@@ -80,6 +84,7 @@ const nextConfig = {
           })
         );
       }
+      */
     }
     
     return config;

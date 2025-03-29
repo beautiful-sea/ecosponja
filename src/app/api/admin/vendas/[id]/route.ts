@@ -66,7 +66,7 @@ export async function GET(
       itens: venda.itens_pedido || [],
       gatewayPagamento: venda.gateway_pagamento,
       observacoes: venda.observacoes,
-      produtos: venda.itens_pedido ? venda.itens_pedido.map((item: any) => ({
+      produtos: Array.isArray(venda.itens_pedido) ? venda.itens_pedido.map((item: any) => ({
         id: item.produto_id || `sku-${item.sku_id || ''}`,
         nome: item.nome || 'Produto',
         sku: item.sku || '',

@@ -134,7 +134,8 @@ export async function POST(request: Request) {
       
       try {
         // Verifica se há um ID de pedido Yampi ou um número de pedido
-        const pedidoId = orderData.id?.toString() || orderData.number?.toString();
+        const pedidoId = orderData && typeof orderData === 'object' ? 
+          ((orderData as any)['id']?.toString() || (orderData as any)['number']?.toString()) : undefined;
         if (!pedidoId) {
           throw new Error('ID do pedido ausente nos dados recebidos');
         }
@@ -414,7 +415,7 @@ async function processOrderEvent(eventType: string, orderData: any) {
     // Extrair informações de itens, se disponíveis
     let itensPedido = null;
     if (orderData.items && Array.isArray(orderData.items) && orderData.items.length > 0) {
-      itensPedido = orderData.items.map(item => ({
+      itensPedido = orderData.items.map((item: any) => ({
         produto_id: item.product_id || null,
         sku_id: item.sku_id || null,
         sku: item.sku || '',
@@ -443,7 +444,7 @@ async function processOrderEvent(eventType: string, orderData: any) {
         : new Date(),
       data_atualizacao: new Date(),
       // Novos campos de integração com a Yampi
-      yampi_id: orderData.id?.toString() || null,
+      yampi_id: (orderData.id as any)?.toString() || null,
       yampi_status_id: statusId || null,
       shipment_service: orderData.shipment_service || orderData.shipping_service || null,
       forma_pagamento: orderData.payment_method || null,

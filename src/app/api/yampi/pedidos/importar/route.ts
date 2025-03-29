@@ -203,11 +203,11 @@ async function processYampiOrder(orderData: any) {
           : new Date(),
         data_atualizacao: new Date(),
         yampi_id: orderData.id?.toString() || null,
-        yampi_status_id: statusId,
+        yampi_status_id: typeof orderData.status === 'object' ? orderData.status.id : null,
         shipment_service: orderData.shipment_service || orderData.shipping_service || null,
         forma_pagamento: orderData.payment_method || null,
-        endereco_entrega: endereco ? Prisma.JsonValue(endereco) : undefined,
-        itens_pedido: itensPedido ? Prisma.JsonValue(itensPedido) : undefined,
+        endereco_entrega: endereco || undefined,
+        itens_pedido: itensPedido || undefined,
         gateway_pagamento: orderData.gateway || null,
         observacoes: orderData.observation || null
       }

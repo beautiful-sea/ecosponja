@@ -1,6 +1,15 @@
 import * as jwt from 'jsonwebtoken';
 import { prisma } from './prisma';
 
+// Função para gerar token JWT
+export function generateToken(userData: any) {
+  return jwt.sign(
+    userData,
+    process.env.JWT_SECRET || 'your-secret-key',
+    { expiresIn: '7d' }
+  );
+}
+
 export function extractTokenFromHeader(authHeader: string): string | null {
   if (!authHeader.startsWith('Bearer ')) {
     return null;
