@@ -1,36 +1,160 @@
 'use client'
 
-import { useEffect, useState, useCallback, memo } from 'react'
+import { useEffect, useState, useCallback, memo, Suspense, lazy } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Navigation from '../components/Navigation'
 import Footer from '../components/Footer'
 import dynamic from 'next/dynamic'
+import OptimizedImage from '../components/OptimizedImage'
+import SimpleIcon from '../components/SimpleIcon'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 // Lazy load componentes que não são necessários imediatamente
 const LazyFAQSection = dynamic(() => import('../components/LazyFAQSection'), {
-  loading: () => <div className="py-16 bg-gray-50"><div className="container mx-auto px-4 text-center">Carregando...</div></div>,
+  loading: () => <div className="py-16 bg-gray-50"><div className="container mx-auto px-4 text-center">Carregando seção de perguntas frequentes...</div></div>,
   ssr: false,
 });
 
 // Importação dinâmica do contador para reduzir o bundle inicial
 const CountdownTimer = dynamic(() => import('../components/CountdownTimer'), {
-  loading: () => (
-    <div className="flex justify-center gap-4">
-      {[...Array(4)].map((_, i) => (
-        <div key={i} className="flex flex-col items-center bg-white px-4 py-2 rounded-lg shadow-md w-20">
-          <div className="h-6 w-8 bg-gray-200 rounded animate-pulse"></div>
-          <div className="h-4 w-10 bg-gray-100 rounded mt-1 animate-pulse"></div>
-        </div>
-      ))}
-    </div>
-  ),
+  loading: () => null,
   ssr: false,
 });
 
 // Memoizando componentes pesados
 const MemoizedNavigation = memo(Navigation);
 const MemoizedFooter = memo(Footer);
+
+// Reutilizando o componente SimpleIcon para todos os ícones
+const Icon = SimpleIcon;
+
+// Componente para notificações de compra recente
+const RecentPurchaseNotifications = memo(() => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [buyerInfo, setBuyerInfo] = useState({ nome: '', local: '' });
+
+  useEffect(() => {
+    // Dados pré-definidos para evitar manipulação DOM desnecessária
+    const compradores = [
+      { nome: "Maria Silva", local: "Belo Horizonte, MG" },
+      { nome: "João Pereira", local: "São Paulo, SP" },
+      { nome: "Ana Oliveira", local: "Porto Alegre, RS" },
+      { nome: "Carlos Santos", local: "Recife, PE" }
+    ];
+    
+    let notificationTimeout;
+    let hideTimeout;
+    
+    const showNotification = () => {
+      const comprador = compradores[Math.floor(Math.random() * compradores.length)];
+      setBuyerInfo(comprador);
+      setIsVisible(true);
+      
+      // Esconde a notificação após 4 segundos
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        setIsVisible(false);
+      }, 4000);
+      
+      // Programa a próxima notificação (entre 20 e 40 segundos)
+      clearTimeout(notificationTimeout);
+      const nextInterval = Math.floor(Math.random() * (40000 - 20000) + 20000);
+      notificationTimeout = setTimeout(showNotification, nextInterval);
+    };
+    
+    // Inicia o ciclo de notificações após 10 segundos
+    notificationTimeout = setTimeout(showNotification, 10000);
+
+    return () => {
+      clearTimeout(notificationTimeout);
+      clearTimeout(hideTimeout);
+    };
+  }, []);
+
+  if (!isVisible) return null;
+
+  return (
+    <div className={`fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-3 z-50 flex items-center max-w-xs transform ${isVisible ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-500 ease-in-out`}>
+      <div className="bg-green-100 rounded-full p-2 mr-3">
+        <Icon name="fas fa-shopping-cart" className="text-green-600" />
+      </div>
+      <p className="text-gray-700 text-sm">
+        <strong>{buyerInfo.nome}</strong> de {buyerInfo.local} acabou de comprar
+      </p>
+    </div>
+  );
+});
+
+RecentPurchaseNotifications.displayName = 'RecentPurchaseNotifications';
+
+// Componente para indicador de visualizações
+const ViewerCounter = memo(({ count }: { count: number }) => (
+  <div className="mt-6 bg-red-50 border border-red-100 rounded-md p-3 flex items-center justify-center animate-pulse">
+    <div className="text-red-500 mr-2">
+      <Icon name="fas fa-eye" />
+    </div>
+    <p className="text-sm font-medium text-gray-700">
+      <span className="font-bold">{count} pessoas</span> estão vendo este produto agora!
+    </p>
+  </div>
+));
+
+ViewerCounter.displayName = 'ViewerCounter';
+
+// Component de fallback para o FAQ quando o lazy loading falha
+const StaticFAQSection = () => (
+  <section className="py-16 bg-gray-50">
+    <div className="container mx-auto px-4">
+      <div className="text-center mb-12">
+        <span className="inline-block bg-yellow-100 text-yellow-600 font-bold px-4 py-1 rounded-full mb-3">
+          DÚVIDAS COMUNS
+        </span>
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">Perguntas Frequentes</h2>
+        <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+          Tire todas as suas dúvidas sobre a EcoEsponja Mágica e faça uma escolha informada
+        </p>
+      </div>
+      
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-bold text-green-700 mb-3 flex items-center">
+            <SimpleIcon name="fas fa-question-circle" className="text-green-500 mr-3" />
+            Quanto tempo dura a EcoEsponja Mágica?
+          </h3>
+          <p className="text-gray-700">Com os cuidados adequados, a EcoEsponja Mágica pode durar até 12 meses de uso diário, substituindo até 12 esponjas tradicionais.</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-bold text-green-700 mb-3 flex items-center">
+            <SimpleIcon name="fas fa-question-circle" className="text-green-500 mr-3" />
+            Como conservar minha EcoEsponja?
+          </h3>
+          <p className="text-gray-700">Após o uso, enxágue bem com água corrente e deixe secar naturalmente em local arejado.</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-bold text-green-700 mb-3 flex items-center">
+            <SimpleIcon name="fas fa-question-circle" className="text-green-500 mr-3" />
+            A EcoEsponja Mágica é adequada para todas as superfícies?
+          </h3>
+          <p className="text-gray-700">Sim! A EcoEsponja Mágica é segura para uso em vidros, espelhos, cerâmicas, inox, madeira tratada, plásticos e panelas antiaderentes.</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-bold text-green-700 mb-3 flex items-center">
+            <SimpleIcon name="fas fa-question-circle" className="text-green-500 mr-3" />
+            Qual o prazo de entrega?
+          </h3>
+          <p className="text-gray-700">As entregas são realizadas em todo Brasil, com prazo médio de 3 a 7 dias úteis para capitais e de 7 a 15 dias para demais localidades.</p>
+        </div>
+      </div>
+
+      <div className="text-center mt-10">
+        <a href="#comprar" className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-8 rounded-lg transition-colors inline-block shadow-md">
+          QUERO COMPRAR AGORA
+        </a>
+      </div>
+    </div>
+  </section>
+);
 
 export default function Home() {
   const [showPopup, setShowPopup] = useState(false);
@@ -39,124 +163,70 @@ export default function Home() {
   const [whatsapp, setWhatsapp] = useState('');
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [unidadesRestantes, setUnidadesRestantes] = useState(37);
+  const [isPageFullyLoaded, setIsPageFullyLoaded] = useState(false);
 
-  // Função para carregamento de recursos secundários, movida para fora do useEffect
-  const loadSecondaryFeatures = useCallback(() => {
-    // Popup de captura de leads após 5 segundos na página
-    const popupTimeout = setTimeout(() => {
-      setShowPopup(true);
-    }, 5000);
+  // Efeito para inicializar visualizações após carregamento da página
+  useEffect(() => {
+    // Atrasar esta operação não crítica
+    const timer = setTimeout(() => {
+      // Gerar número aleatório de visualizações entre 15 e 30
+      const randomViews = Math.floor(Math.random() * (30 - 15 + 1)) + 15;
+      setViewerCount(randomViews);
+      setIsPageFullyLoaded(true);
+    }, 1500);
 
-    // Gerar número aleatório de visualizações entre 15 e 30
-    const randomViews = Math.floor(Math.random() * (30 - 15 + 1)) + 15;
-    setViewerCount(randomViews);
+    return () => clearTimeout(timer);
+  }, []);
 
-    // Simular flutuação de visualizações - reduzido intervalo
+  // Efeito separado para funcionalidades secundárias, executado apenas após carregamento completo
+  useEffect(() => {
+    if (!isPageFullyLoaded) return;
+
+    // Simulações com intervalos maiores para reduzir o trabalho do thread principal
     const viewerInterval = setInterval(() => {
       setViewerCount(prev => {
         const change = Math.random() > 0.5 ? 1 : -1;
         const newCount = prev + change;
         return newCount < 10 ? 10 : (newCount > 35 ? 35 : newCount);
       });
-    }, 30000);
+    }, 60000); // Reduzido para uma vez por minuto
 
-    // Simulação de redução de estoque para aumentar escassez - reduzido intervalo
     const estoqueInterval = setInterval(() => {
       if (Math.random() > 0.7) {
         setUnidadesRestantes(prev => (prev > 1 ? prev - 1 : 1));
       }
-    }, 60000);
+    }, 120000); // Reduzido para uma vez a cada 2 minutos
 
-    // Notificações de compras recentes - movido para após o carregamento principal
-    const compradores = [
-      { nome: "Maria Silva", local: "Belo Horizonte, MG" },
-      { nome: "João Pereira", local: "São Paulo, SP" },
-      { nome: "Ana Oliveira", local: "Porto Alegre, RS" },
-      { nome: "Carlos Santos", local: "Recife, PE" },
-      { nome: "Juliana Costa", local: "Brasília, DF" },
-      { nome: "Roberto Lima", local: "Salvador, BA" },
-      { nome: "Fernanda Souza", local: "Curitiba, PR" },
-      { nome: "Marcos Andrade", local: "Fortaleza, CE" }
-    ];
-    
-    let notificationTimeout;
-    let hideTimeout;
-    
-    const showNotification = () => {
-      const notification = document.getElementById('recent-purchase');
-      if (notification) {
-        const comprador = compradores[Math.floor(Math.random() * compradores.length)];
-        const notificationText = document.getElementById('notification-text');
-        if (notificationText) {
-          notificationText.innerHTML = `<strong>${comprador.nome}</strong> de ${comprador.local} acabou de comprar`;
-        }
-        
-        notification.classList.remove('translate-x-full');
-        notification.classList.add('translate-x-0');
-        
-        // Esconde a notificação após 4 segundos
-        clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(() => {
-          notification.classList.remove('translate-x-0');
-          notification.classList.add('translate-x-full');
-        }, 4000);
-        
-        // Programa a próxima notificação (entre 15 e 30 segundos)
-        clearTimeout(notificationTimeout);
-        const nextInterval = Math.floor(Math.random() * (30000 - 15000) + 15000);
-        notificationTimeout = setTimeout(showNotification, nextInterval);
-      }
-    };
-    
-    // Inicia o ciclo de notificações após 8 segundos (tempo aumentado para priorizar conteúdo principal)
-    notificationTimeout = setTimeout(showNotification, 8000);
-
-    return { popupTimeout, viewerInterval, estoqueInterval, notificationTimeout, hideTimeout };
-  }, []);
-
-  useEffect(() => {
-    // Carrega funcionalidades secundárias após o carregamento da página principal
-    // Usando requestIdleCallback ou setTimeout como fallback para
-    // adiar o carregamento de recursos menos críticos
-    let secondaryTimeouts = null;
-    const loadSecondaryFeaturesWhenIdle = () => {
-      secondaryTimeouts = loadSecondaryFeatures();
-    };
-    
-    // Usar requestIdleCallback se disponível, ou setTimeout como fallback
-    if (typeof window !== 'undefined') {
-      if ('requestIdleCallback' in window) {
-        // @ts-ignore - TypeScript pode não reconhecer requestIdleCallback
-        window.requestIdleCallback(loadSecondaryFeaturesWhenIdle, { timeout: 2000 });
-      } else {
-        setTimeout(loadSecondaryFeaturesWhenIdle, 2000);
-      }
-    }
-
-    // Limpeza
     return () => {
-      if (secondaryTimeouts) {
-        clearTimeout(secondaryTimeouts.popupTimeout);
-        clearInterval(secondaryTimeouts.viewerInterval);
-        clearInterval(secondaryTimeouts.estoqueInterval);
-        clearTimeout(secondaryTimeouts.notificationTimeout);
-        clearTimeout(secondaryTimeouts.hideTimeout);
-      }
+      clearInterval(viewerInterval);
+      clearInterval(estoqueInterval);
     };
-  }, [loadSecondaryFeatures]);
+  }, [isPageFullyLoaded]);
 
-  const handleSubmitLead = (e: React.FormEvent<HTMLFormElement>) => {
+  // Efeito separado para o popup, adiado para não competir com o carregamento inicial
+  useEffect(() => {
+    if (!isPageFullyLoaded) return;
+
+    // Popup de captura de leads após carregamento da página
+    const popupTimeout = setTimeout(() => {
+      setShowPopup(true);
+    }, 6000);
+
+    return () => clearTimeout(popupTimeout);
+  }, [isPageFullyLoaded]);
+
+  const handleSubmitLead = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Aqui seria implementada a lógica de envio do lead para o backend
     setFormSubmitted(true);
     setTimeout(() => {
       setShowPopup(false);
     }, 3000);
-  };
+  }, []);
 
-  const closePopup = () => {
+  const closePopup = useCallback(() => {
     setShowPopup(false);
-  };
+  }, []);
 
   return (
     <main>
@@ -171,7 +241,7 @@ export default function Home() {
               className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
               aria-label="Fechar popup"
             >
-              <i className="fas fa-times text-xl"></i>
+              <Icon name="fas fa-times" className="text-xl" />
             </button>
             
             {!formSubmitted ? (
@@ -222,7 +292,7 @@ export default function Home() {
                   </button>
 
                   <div className="flex items-center justify-center text-xs text-gray-500 mt-2">
-                    <i className="fas fa-lock mr-1"></i>
+                    <Icon name="fas fa-lock" className="mr-1" />
                     <span>Seus dados estão 100% protegidos</span>
                   </div>
                 </form>
@@ -237,7 +307,7 @@ export default function Home() {
             ) : (
               <div className="text-center py-8">
                 <div className="text-5xl text-green-500 mb-4">
-                  <i className="fas fa-check-circle"></i>
+                  <Icon name="fas fa-check-circle" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">Desconto Garantido!</h3>
                 <p className="text-gray-600">Seu cupom <strong>PRIMEIRA15</strong> foi enviado para seu email.</p>
@@ -249,12 +319,7 @@ export default function Home() {
       )}
 
       {/* Notificação de compra recente - Otimizada com prova social */}
-      <div id="recent-purchase" className="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-3 z-50 transform translate-x-full transition-transform duration-500 ease-in-out flex items-center max-w-xs">
-        <div className="bg-green-100 rounded-full p-2 mr-3">
-          <i className="fas fa-shopping-cart text-green-600"></i>
-        </div>
-        <p id="notification-text" className="text-gray-700 text-sm"></p>
-      </div>
+      <RecentPurchaseNotifications />
 
       {/* Hero Section Otimizada - AIDA (Atenção, Interesse, Desejo, Ação) */}
       <section className="relative bg-gradient-to-r from-green-50 to-blue-50 py-16 md:py-24">
@@ -286,25 +351,25 @@ export default function Home() {
               <div className="flex flex-wrap gap-4 mb-8 max-w-xl">
                 <div className="flex items-center bg-white py-2 px-3 rounded-lg shadow-sm">
                   <div className="text-green-600 mr-2">
-                    <i className="fas fa-check-circle text-xl"></i>
+                    <Icon name="fas fa-check-circle" className="text-xl" />
                   </div>
                   <span className="text-gray-700 font-medium">Dura 12 meses</span>
                 </div>
                 <div className="flex items-center bg-white py-2 px-3 rounded-lg shadow-sm">
                   <div className="text-green-600 mr-2">
-                    <i className="fas fa-check-circle text-xl"></i>
+                    <Icon name="fas fa-check-circle" className="text-xl" />
                   </div>
                   <span className="text-gray-700 font-medium">Antibacteriana</span>
                 </div>
                 <div className="flex items-center bg-white py-2 px-3 rounded-lg shadow-sm">
                   <div className="text-green-600 mr-2">
-                    <i className="fas fa-check-circle text-xl"></i>
+                    <Icon name="fas fa-check-circle" className="text-xl" />
                   </div>
                   <span className="text-gray-700 font-medium">Não risca nada</span>
                 </div>
                 <div className="flex items-center bg-white py-2 px-3 rounded-lg shadow-sm">
                   <div className="text-green-600 mr-2">
-                    <i className="fas fa-check-circle text-xl"></i>
+                    <Icon name="fas fa-check-circle" className="text-xl" />
                   </div>
                   <span className="text-gray-700 font-medium">Ecológica</span>
                 </div>
@@ -313,7 +378,7 @@ export default function Home() {
               <div className="bg-white p-4 rounded-lg shadow-md mb-8 border-l-4 border-yellow-500">
                 <div className="flex items-center">
                   <div className="text-yellow-500 mr-3">
-                    <i className="fas fa-shipping-fast text-2xl"></i>
+                    <Icon name="fas fa-shipping-fast" className="text-2xl" />
                   </div>
                   <div>
                     <p className="font-bold text-gray-800">Frete Grátis em Compras Acima de R$ 99,90</p>
@@ -325,24 +390,17 @@ export default function Home() {
               {/* Ação - Botões CTA Otimizados */}
               <div className="space-y-4 sm:space-y-0 sm:flex sm:space-x-4">
                 <a href="#comprar" className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg inline-flex items-center justify-center transition-all transform hover:scale-105 text-lg w-full sm:w-auto">
-                  <i className="fas fa-shopping-cart mr-2"></i> 
+                  <Icon name="fas fa-shopping-cart" className="mr-2" /> 
                   QUERO PROTEGER MINHA FAMÍLIA
                 </a>
                 <a href="#beneficios" className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-medium py-3 px-6 rounded-lg inline-flex items-center justify-center hover:bg-gray-50 transition-colors w-full sm:w-auto">
-                  <i className="fas fa-info-circle mr-2"></i>
+                  <Icon name="fas fa-info-circle" className="mr-2" />
                   Ver Benefícios
                 </a>
               </div>
 
               {/* Contador de visualizações em tempo real - Escassez */}
-              <div className="mt-6 bg-red-50 border border-red-100 rounded-md p-3 flex items-center justify-center animate-pulse">
-                <div className="text-red-500 mr-2">
-                  <i className="fas fa-eye"></i>
-                </div>
-                <p className="text-sm font-medium text-gray-700">
-                  <span className="font-bold">{viewerCount} pessoas</span> estão vendo este produto agora!
-                </p>
-              </div>
+              <ViewerCounter count={viewerCount} />
             </div>
           </div>
           
@@ -355,7 +413,6 @@ export default function Home() {
                 width={600}
                 height={400}
                 priority={true}
-                fetchPriority="high"
                 className="w-full object-contain"
               />
               
@@ -364,7 +421,7 @@ export default function Home() {
               </div>
 
               <div className="absolute top-4 left-4 bg-green-600 text-white text-sm py-1 px-3 rounded-full shadow-md">
-                <i className="fas fa-shield-alt mr-1"></i> Anti-bacteriana
+                <Icon name="fas fa-shield-alt" className="mr-1" /> Anti-bacteriana
               </div>
             </div>
             
@@ -382,15 +439,15 @@ export default function Home() {
             {/* Selos de Credibilidade */}
             <div className="mt-4 grid grid-cols-3 gap-2">
               <div className="bg-white p-2 rounded-md shadow-sm flex items-center justify-center">
-                <i className="fas fa-lock text-green-600 text-2xl"></i>
+                <Icon name="fas fa-lock" className="text-green-600 text-2xl" />
                 <span className="ml-2 text-sm font-medium">Pagamento Seguro</span>
               </div>
               <div className="bg-white p-2 rounded-md shadow-sm flex items-center justify-center">
-                <i className="fas fa-leaf text-green-600 text-2xl"></i>
+                <Icon name="fas fa-leaf" className="text-green-600 text-2xl" />
                 <span className="ml-2 text-sm font-medium">Certificado Eco</span>
               </div>
               <div className="bg-white p-2 rounded-md shadow-sm flex items-center justify-center">
-                <i className="fas fa-shipping-fast text-green-600 text-2xl"></i>
+                <Icon name="fas fa-shipping-fast" className="text-green-600 text-2xl" />
                 <span className="ml-2 text-sm font-medium">Entrega Prime</span>
               </div>
             </div>
@@ -416,7 +473,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="bg-red-50 p-6 rounded-lg shadow-md border-t-4 border-red-600 transform transition-transform hover:scale-105">
               <div className="text-red-600 text-5xl mb-4 flex justify-center">
-                <i className="fas fa-virus"></i>
+                <Icon name="fas fa-virus" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-red-700 text-center">Foco de Bactérias</h3>
               <p className="text-gray-700">Uma única esponja comum pode abrigar mais de <strong className="text-red-600">362 tipos de bactérias</strong>, incluindo E. coli e Salmonella, que podem causar doenças graves.</p>
@@ -424,7 +481,7 @@ export default function Home() {
             
             <div className="bg-red-50 p-6 rounded-lg shadow-md border-t-4 border-red-600 transform transition-transform hover:scale-105">
               <div className="text-red-600 text-5xl mb-4 flex justify-center">
-                <i className="fas fa-money-bill-wave-alt"></i>
+                <Icon name="fas fa-money-bill-wave-alt" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-red-700 text-center">Desperdício Financeiro</h3>
               <p className="text-gray-700">Você troca esponjas a cada semana? Isso custa até <strong className="text-red-600">R$ 144,00 por ano</strong>, dinheiro que poderia economizar para outras necessidades da sua família.</p>
@@ -432,7 +489,7 @@ export default function Home() {
             
             <div className="bg-red-50 p-6 rounded-lg shadow-md border-t-4 border-red-600 transform transition-transform hover:scale-105">
               <div className="text-red-600 text-5xl mb-4 flex justify-center">
-                <i className="fas fa-allergies"></i>
+                <Icon name="fas fa-allergies" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-red-700 text-center">Risco de Alergias</h3>
               <p className="text-gray-700">Esponjas comuns podem desencadear reações alérgicas na pele sensível e problemas respiratórios devido aos resíduos e bactérias acumulados.</p>
@@ -441,7 +498,7 @@ export default function Home() {
 
           <div className="text-center mt-10">
             <a href="#comprar" className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg inline-flex items-center justify-center transition-all shadow-lg">
-              <i className="fas fa-shield-alt mr-2"></i> PROTEJA SUA FAMÍLIA AGORA
+              <Icon name="fas fa-shield-alt" className="mr-2" /> PROTEJA SUA FAMÍLIA AGORA
             </a>
           </div>
         </div>
@@ -453,7 +510,7 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="bg-red-100 border-l-4 border-red-500 p-6">
               <h2 className="text-3xl font-bold text-red-600 mb-6 flex items-center">
-                <i className="fas fa-biohazard text-red-600 mr-3 text-4xl"></i> 
+                <Icon name="fas fa-biohazard" className="text-red-600 mr-3 text-4xl" /> 
                 Sua Esponja Está Colocando Sua Família em Risco?
               </h2>
               <p className="text-lg text-gray-700 mb-3">A ciência comprova: a esponja de lavar louça que está na sua pia é um dos itens mais contaminados da sua casa, mais sujo que o assento do seu vaso sanitário!</p>
@@ -479,28 +536,28 @@ export default function Home() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="bg-red-50 p-4 rounded-lg flex items-start gap-3">
-                    <i className="fas fa-virus text-red-600 mt-1 text-xl"></i> 
+                    <Icon name="fas fa-virus" className="text-red-600 mt-1 text-xl" /> 
                     <div>
                       <span className="font-bold text-red-800">E. coli</span>
                       <p className="text-sm text-gray-700">Causa infecções intestinais e intoxicações alimentares</p>
                     </div>
                   </div>
                   <div className="bg-red-50 p-4 rounded-lg flex items-start gap-3">
-                    <i className="fas fa-virus text-red-600 mt-1 text-xl"></i> 
+                    <Icon name="fas fa-virus" className="text-red-600 mt-1 text-xl" /> 
                     <div>
                       <span className="font-bold text-red-800">Salmonella</span>
                       <p className="text-sm text-gray-700">Responsável por diarreias graves e febres</p>
                     </div>
                   </div>
                   <div className="bg-red-50 p-4 rounded-lg flex items-start gap-3">
-                    <i className="fas fa-virus text-red-600 mt-1 text-xl"></i> 
+                    <Icon name="fas fa-virus" className="text-red-600 mt-1 text-xl" /> 
                     <div>
                       <span className="font-bold text-red-800">Staphylococcus</span>
                       <p className="text-sm text-gray-700">Pode provocar infecções de pele e intoxicações</p>
                     </div>
                   </div>
                   <div className="bg-red-50 p-4 rounded-lg flex items-start gap-3">
-                    <i className="fas fa-virus text-red-600 mt-1 text-xl"></i> 
+                    <Icon name="fas fa-virus" className="text-red-600 mt-1 text-xl" /> 
                     <div>
                       <span className="font-bold text-red-800">Campylobacter</span>
                       <p className="text-sm text-gray-700">Causa gastroenterite e dores abdominais intensas</p>
@@ -509,7 +566,7 @@ export default function Home() {
                 </div>
                 
                 <div className="bg-pink-50 p-5 rounded-lg border-l-4 border-red-300 mb-6">
-                  <i className="fas fa-quote-left text-red-400 mb-2 text-xl"></i>
+                  <Icon name="fas fa-quote-left" className="text-red-400 mb-2 text-xl" />
                   <p className="text-gray-700 mb-2">"Esponjas de cozinha são verdadeiros reservatórios de micro-organismos. Um estudo da Universidade de Furtwangen comprovou que nem mesmo ferver ou usar micro-ondas elimina todas as bactérias."</p>
                   <p className="text-sm text-gray-500">— Dr. Markus Egert, Microbiologista</p>
                 </div>
@@ -522,7 +579,7 @@ export default function Home() {
                   <div className="mt-4">
                     <a href="#comprar" 
                       className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md">
-                      <i className="fas fa-shield-alt mr-2"></i> QUERO PROTEÇÃO PARA MINHA FAMÍLIA
+                      <Icon name="fas fa-shield-alt" className="mr-2" /> QUERO PROTEÇÃO PARA MINHA FAMÍLIA
                     </a>
                   </div>
                 </div>
@@ -563,14 +620,14 @@ export default function Home() {
               </video>
             </div>
             <div className="bg-black text-white py-2 px-4 text-center text-sm">
-              <p><i className="fas fa-play-circle mr-1"></i> Veja como a EcoEsponja Mágica está transformando a vida de milhares de brasileiros</p>
+              <p><Icon name="fas fa-play-circle" className="mr-1" /> Veja como a EcoEsponja Mágica está transformando a vida de milhares de brasileiros</p>
             </div>
           </div>
 
           <div className="bg-blue-50 p-6 rounded-lg shadow-md max-w-3xl mx-auto mb-10">
             <div className="flex items-center mb-4">
               <div className="bg-blue-100 p-2 rounded-full mr-4">
-                <i className="fas fa-lightbulb text-blue-600 text-2xl"></i>
+                <Icon name="fas fa-lightbulb" className="text-blue-600 text-2xl" />
               </div>
               <h3 className="text-xl font-bold text-blue-800">Você Sabia?</h3>
             </div>
@@ -585,7 +642,7 @@ export default function Home() {
 
           <div className="flex items-center justify-center">
             <a href="#comprar" className="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-10 rounded-lg transition-colors shadow-lg text-xl flex items-center">
-              <i className="fas fa-check-circle mr-2"></i> 
+              <Icon name="fas fa-check-circle" className="mr-2" /> 
               QUERO EXPERIMENTAR A ECOESPONJA
             </a>
           </div>
@@ -600,7 +657,7 @@ export default function Home() {
               ECONOMIA COMPROVADA
             </span>
             <h2 className="text-3xl font-bold text-gray-800 mb-4 flex items-center justify-center">
-              <i className="fas fa-coins text-yellow-500 mr-3 text-4xl"></i> Economize Mais de R$100 Por Ano
+              <Icon name="fas fa-coins" className="text-yellow-500 mr-3 text-4xl" /> Economize Mais de R$100 Por Ano
             </h2>
             <p className="text-lg text-gray-700 max-w-3xl mx-auto">
               O investimento inteligente que protege seu bolso e sua família ao mesmo tempo. Veja a comparação:
@@ -621,7 +678,7 @@ export default function Home() {
                 <tr className="border-b bg-red-50">
                   <td className="py-4 md:py-5 px-3 md:px-6 text-left">
                     <div className="flex items-center">
-                      <i className="fas fa-times-circle text-red-500 mr-2"></i>
+                      <Icon name="fas fa-times-circle" className="text-red-500 mr-2" />
                       <span className="text-sm md:text-base">Esponja comum</span>
                     </div>
                   </td>
@@ -631,7 +688,7 @@ export default function Home() {
                 <tr className="bg-green-50">
                   <td className="py-4 md:py-5 px-3 md:px-6 text-left font-semibold text-green-700">
                     <div className="flex items-center">
-                      <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                      <Icon name="fas fa-check-circle" className="text-green-500 mr-2" />
                       <span className="text-sm md:text-base">EcoEsponja Mágica</span>
                     </div>
                   </td>
@@ -671,7 +728,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
             <div className="bg-white p-5 rounded-lg shadow-md flex flex-col items-center text-center transform transition-transform hover:scale-105">
               <div className="text-4xl text-green-500 mb-3">
-                <i className="fas fa-wallet"></i>
+                <Icon name="fas fa-wallet" />
               </div>
               <h3 className="font-bold text-lg mb-2">Economia para Seu Bolso</h3>
               <p className="text-gray-700">Reduza seus gastos com produtos de limpeza em mais de R$100 por ano.</p>
@@ -679,7 +736,7 @@ export default function Home() {
 
             <div className="bg-white p-5 rounded-lg shadow-md flex flex-col items-center text-center transform transition-transform hover:scale-105">
               <div className="text-4xl text-green-500 mb-3">
-                <i className="fas fa-heart"></i>
+                <Icon name="fas fa-heart" />
               </div>
               <h3 className="font-bold text-lg mb-2">Proteção para Sua Família</h3>
               <p className="text-gray-700">Material antibacteriano que elimina 99,9% dos germes nocivos à saúde.</p>
@@ -687,7 +744,7 @@ export default function Home() {
 
             <div className="bg-white p-5 rounded-lg shadow-md flex flex-col items-center text-center transform transition-transform hover:scale-105">
               <div className="text-4xl text-green-500 mb-3">
-                <i className="fas fa-globe-americas"></i>
+                <Icon name="fas fa-globe-americas" />
               </div>
               <h3 className="font-bold text-lg mb-2">Menos Lixo no Planeta</h3>
               <p className="text-gray-700">Reduza seu impacto ambiental eliminando dezenas de esponjas descartáveis.</p>
@@ -1379,7 +1436,7 @@ export default function Home() {
       </section>
 
       {/* Perguntas Frequentes - Seção carregada com lazy loading */}
-      <LazyFAQSection />
+      <StaticFAQSection />
 
       {/* CTA Final - Seção Otimizada */}
       <section className="py-16 bg-gradient-to-b from-green-50 to-green-100 relative overflow-hidden">

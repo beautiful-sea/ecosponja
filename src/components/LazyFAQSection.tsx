@@ -12,7 +12,7 @@ const FAQ = dynamic(() => import('./FAQ'), {
 
 export default function LazyFAQSection() {
   const [isMounted, setIsMounted] = useState(false)
-  const { ref, isVisible } = useIntersectionObserver({
+  const { ref, isVisible, setRef } = useIntersectionObserver({
     rootMargin: '200px', // Precarregar quando estiver a 200px de distância
     triggerOnce: true
   })
@@ -50,10 +50,14 @@ export default function LazyFAQSection() {
     </div>
   )
 
-  if (!isMounted) return null
+  if (!isMounted) return null;
 
   return (
-    <div ref={ref as React.RefObject<HTMLDivElement>} id="faq-section">
+    <div 
+      ref={(node) => setRef(node)} 
+      id="faq-section"
+      className="faq-container"
+    >
       {isVisible ? <FAQ /> : <PlaceholderContent />}
     </div>
   )

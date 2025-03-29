@@ -1,6 +1,7 @@
 'use client'
 
 import { memo } from 'react';
+import SimpleIcon from './SimpleIcon';
 
 // Dados do FAQ extraídos para evitar re-renderizações desnecessárias
 const faqItems = [
@@ -34,7 +35,7 @@ const faqItems = [
 const FAQItem = memo(({ question, answer }: { question: string, answer: string }) => (
   <div className="bg-white p-6 rounded-lg shadow-md transform transition-transform hover:scale-[1.01]">
     <h3 className="text-xl font-bold text-green-700 mb-3 flex items-center">
-      <i className="fas fa-question-circle text-green-500 mr-3"></i>
+      <SimpleIcon name="fas fa-question-circle" className="text-green-500 mr-3" />
       {question}
     </h3>
     <p className="text-gray-700">{answer}</p>
