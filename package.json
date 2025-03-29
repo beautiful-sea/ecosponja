@@ -2,26 +2,54 @@
   "name": "ecosponja",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node server.js",
-    "lint": "next lint"
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "test:automation": "ts-node -P tsconfig.node.json src/automation/test.ts",
+    "optimize:images": "node scripts/optimize-images.js",
+    "optimize:js-css": "node scripts/optimize-js-css.js",
+    "check:images": "node scripts/check-image-sizes.js",
+    "optimize-all": "npm run optimize:images && npm run optimize:js-css"
   },
   "dependencies": {
+    "@prisma/client": "^5.10.2",
+    "axios": "^1.8.4",
+    "bcrypt": "^5.1.1",
+    "date-fns": "^3.3.1",
+    "dotenv": "^16.4.7",
+    "jsonwebtoken": "^9.0.2",
     "next": "^14.0.0",
+    "next-auth": "^4.24.11",
+    "puppeteer": "^24.4.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "sharp": "^0.33.5",
+    "ts-node": "^10.9.2",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.5",
-    "typescript": "^5.2.2",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20.8.10",
+    "@types/puppeteer": "^5.4.7",
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
+    "autoprefixer": "^10.4.16",
     "eslint": "^8.52.0",
-    "eslint-config-next": "^14.0.0"
+    "eslint-config-next": "^14.0.0",
+    "postcss": "^8.4.31",
+    "prisma": "^5.10.2",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.8.2",
+    "clean-css": "^5.3.2",
+    "sharp": "^0.32.6",
+    "uglify-js": "^3.17.4"
   }
-} 
+}

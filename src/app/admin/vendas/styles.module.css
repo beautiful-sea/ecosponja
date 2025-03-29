@@ -1,0 +1,351 @@
+.vendasContainer {
+  width: 100%;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.newButton {
+  background-color: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.newButton:hover {
+  background-color: #0284c7;
+}
+
+.syncButton {
+  background-color: #059669;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.syncButton:hover {
+  background-color: #047857;
+}
+
+.syncButton[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.syncButton.loading {
+  position: relative;
+  color: transparent;
+}
+
+.syncButton.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.errorMessage {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.filterSection {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterGroup label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.filterSelect {
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #334155;
+  background-color: white;
+}
+
+.tableContainer {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #64748b;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #0ea5e9;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.emptyState h3 {
+  color: #334155;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.emptyState p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.vendasTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vendasTable th,
+.vendasTable td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.vendasTable th {
+  background-color: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vendasTable tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.vendasTable tbody tr:last-child {
+  border-bottom: none;
+}
+
+.vendasTable tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.pedidoCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.yampiTag {
+  display: inline-block;
+  background-color: #818cf8;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.statusPaid {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.statusPending {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.statusShipping {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statusDelivered {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.statusCanceled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.viewButton {
+  padding: 0.35rem 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.viewButton:hover {
+  background-color: #bae6fd;
+}
+
+.editButton {
+  padding: 0.35rem 0.75rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.editButton:hover {
+  background-color: #e2e8f0;
+}
+
+.actionButtons .syncButton {
+  padding: 0.35rem;
+  min-width: 32px;
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 1rem;
+}
+
+.actionButtons .syncButton:hover {
+  background-color: #e2e8f0;
+}
+
+.actionButtons .syncButton.loading {
+  position: relative;
+  color: transparent;
+}
+
+.actionButtons .syncButton.loading::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(71, 85, 105, 0.3);
+  border-radius: 50%;
+  border-top-color: #475569;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.emptyTable {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .headerActions {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .syncButton, .newButton {
+    width: 100%;
+  }
+  
+  .filterSection {
+    padding: 0.75rem;
+  }
+  
+  .filterGroup {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filterSelect {
+    width: 100%;
+  }
+  
+  .vendasTable {
+    display: block;
+    overflow-x: auto;
+  }
+} 

@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id         String   @id @default(uuid())
+  nome       String
+  email      String   @unique
+  vendas     Venda[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("clientes")
+}
+
+model Venda {
+  id             String   @id @default(uuid())
+  pedido_id      String   @unique
+  status         String
+  valor_total    Float
+  data_criacao   DateTime @default(now())
+  data_atualizacao DateTime @default(now()) @updatedAt
+  cliente_id     String
+  cliente        Cliente  @relation(fields: [cliente_id], references: [id])
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  valor_frete    Float?
+  valor_desconto Float?
+  metodo_pagamento String?
+  parcelas       Int?
+  rastreamento   String?
+  url_rastreamento String?
+  yampi_id       String?
+  yampi_status_id Int?
+  shipment_service String?
+  forma_pagamento String?
+  endereco_entrega Json?
+  itens_pedido   Json?
+  gateway_pagamento String?
+  observacoes    String?
+
+  @@index([data_criacao(sort: Desc)])
+  @@map("vendas")
+}
+
+model WebhookLog {
+  id             Int      @id @default(autoincrement())
+  event_type     String
+  request_body   Json?
+  response_code  Int?
+  response_body  String?
+  error_message  String?
+  created_at     DateTime @default(now())
+
+  @@index([event_type])
+  @@index([created_at])
+  @@map("webhook_logs")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  username   String   @unique
+  password   String
+  name       String
+  email      String?
+  role       String   @default("admin")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("users")
+} 
